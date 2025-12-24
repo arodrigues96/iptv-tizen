@@ -177,13 +177,15 @@ class IPTVApp {
         }
 
         const data = await this.m3uParser.loadFromUrl(this.config.M3U_URL);
-        this.categories = data.categories.map(cat => ({
+        this.allCategories = data.categories.map(cat => ({
             category_id: cat.category_id,
             category_name: cat.category_name,
             type: 'live',
             streams: cat.streams
         }));
 
+        // Filtrar por tipo inicial (live)
+        this.filterCategoriesByType('live');
         this.renderCategories();
     }
 
