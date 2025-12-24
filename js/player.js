@@ -40,6 +40,9 @@ class VideoPlayer {
      */
     async play(streamUrl, title = '') {
         try {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:play:entry',message:'Iniciando reprodução',data:{streamUrl:streamUrl,title:title,isHLS:streamUrl.includes('.m3u8')||streamUrl.includes('m3u8')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             this.currentStream = streamUrl;
             
             // Atualizar título
@@ -53,8 +56,14 @@ class VideoPlayer {
 
             // Verificar se é HLS
             if (streamUrl.includes('.m3u8') || streamUrl.includes('m3u8')) {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:play:beforeHLS',message:'Antes de playHLS',data:{streamUrl:streamUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                // #endregion
                 await this.playHLS(streamUrl);
             } else {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:play:beforeNative',message:'Antes de playNative',data:{streamUrl:streamUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                // #endregion
                 await this.playNative(streamUrl);
             }
 
@@ -62,6 +71,9 @@ class VideoPlayer {
             this.requestFullscreen();
 
         } catch (error) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:play:catch',message:'Erro ao reproduzir',data:{errorName:error.name,errorMessage:error.message,errorStack:error.stack,streamUrl:streamUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             console.error('Erro ao reproduzir:', error);
             this.handleError();
         }
@@ -71,6 +83,9 @@ class VideoPlayer {
      * Reproduz stream HLS usando HLS.js
      */
     async playHLS(url) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:entry',message:'Iniciando playHLS',data:{url:url,hlsSupported:Hls.isSupported(),nativeSupported:this.video.canPlayType('application/vnd.apple.mpegurl')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+        // #endregion
         if (Hls.isSupported()) {
             // Usar HLS.js
             this.hls = new Hls({
@@ -83,12 +98,21 @@ class VideoPlayer {
             this.hls.attachMedia(this.video);
 
             this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:manifestParsed',message:'Manifest parsed',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                // #endregion
                 this.video.play().catch(err => {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:playError',message:'Erro ao iniciar play',data:{errorName:err.name,errorMessage:err.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                    // #endregion
                     console.error('Erro ao iniciar reprodução:', err);
                 });
             });
 
             this.hls.on(Hls.Events.ERROR, (event, data) => {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:hlsError',message:'Erro HLS',data:{fatal:data.fatal,type:data.type,details:data.details,url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                // #endregion
                 console.error('Erro HLS:', data);
                 if (data.fatal) {
                     switch(data.type) {
@@ -109,9 +133,15 @@ class VideoPlayer {
             });
         } else if (this.video.canPlayType('application/vnd.apple.mpegurl')) {
             // Fallback para suporte nativo do Safari
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:nativeFallback',message:'Usando fallback nativo',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             this.video.src = url;
             await this.video.play();
         } else {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:notSupported',message:'HLS não suportado',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             throw new Error('HLS não suportado neste navegador');
         }
     }
@@ -120,8 +150,21 @@ class VideoPlayer {
      * Reproduz stream usando player nativo
      */
     async playNative(url) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playNative:entry',message:'Iniciando playNative',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+        // #endregion
         this.video.src = url;
-        await this.video.play();
+        try {
+            await this.video.play();
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playNative:success',message:'Play iniciado com sucesso',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
+        } catch (err) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playNative:error',message:'Erro ao iniciar play nativo',data:{errorName:err.name,errorMessage:err.message,url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
+            throw err;
+        }
     }
 
     /**

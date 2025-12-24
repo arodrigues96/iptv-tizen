@@ -11,9 +11,12 @@ class IPTVApp {
         this.player = null;
         this.currentScreen = 'loading-screen';
         this.categories = [];
+        this.allCategories = []; // Todas as categorias (live + vod)
         this.channels = [];
         this.currentCategory = null;
         this.searchQuery = '';
+        this.currentMenuType = 'live'; // live, vod, series
+        this.currentSearchType = 'all'; // all, live, vod, series
         
         this.init();
     }
@@ -155,11 +158,13 @@ class IPTVApp {
         const categoriesData = await this.api.getAllCategories();
         
         // Combinar categorias live e VOD
-        this.categories = [
+        this.allCategories = [
             ...categoriesData.live.map(cat => ({ ...cat, type: 'live' })),
             ...categoriesData.vod.map(cat => ({ ...cat, type: 'vod' }))
         ];
 
+        // Filtrar por tipo inicial (live)
+        this.filterCategoriesByType('live');
         this.renderCategories();
     }
 
@@ -180,6 +185,23 @@ class IPTVApp {
         }));
 
         this.renderCategories();
+    }
+
+    /**
+     * Filtra categorias por tipo
+     */
+    filterCategoriesByType(type) {
+        this.currentMenuType = type;
+        if (type === 'live') {
+            this.categories = this.allCategories.filter(cat => cat.type === 'live');
+        } else if (type === 'vod') {
+            this.categories = this.allCategories.filter(cat => cat.type === 'vod');
+        } else if (type === 'series') {
+            // Series são geralmente VOD também, mas podemos filtrar por nome se necessário
+            this.categories = this.allCategories.filter(cat => cat.type === 'vod');
+        } else {
+            this.categories = this.allCategories;
+        }
     }
 
     /**
@@ -397,9 +419,25 @@ class IPTVApp {
 
             if (this.config.IPTV_TYPE === 'xtream') {
                 const searchResults = await this.api.search(query);
-                results = [...searchResults.live, ...searchResults.vod];
+                // Filtrar por tipo de busca
+                if (this.currentSearchType === 'live') {
+                    results = searchResults.live;
+                } else if (this.currentSearchType === 'vod' || this.currentSearchType === 'series') {
+                    results = searchResults.vod;
+                } else {
+                    results = [...searchResults.live, ...searchResults.vod];
+                }
             } else {
                 results = this.m3uParser.search(query);
+            }
+
+            // Se buscar por "series", filtrar resultados que parecem séries
+            if (this.currentSearchType === 'series') {
+                const seriesKeywords = ['season', 'episode', 'ep', 'série', 'serie', 'series'];
+                results = results.filter(item => {
+                    const name = (item.name || item.title || '').toLowerCase();
+                    return seriesKeywords.some(keyword => name.includes(keyword));
+                });
             }
 
             this.renderSearchResults(results);
@@ -538,6 +576,32 @@ class IPTVApp {
                 }, 300);
             });
         }
+
+        // Menu de tipo (TV/Files/Series) na tela de categorias
+        document.querySelectorAll('#categories-screen .menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const type = item.getAttribute('data-type');
+                document.querySelectorAll('#categories-screen .menu-item').forEach(m => m.classList.remove('active'));
+                item.classList.add('active');
+                this.filterCategoriesByType(type);
+                this.renderCategories();
+            });
+        });
+
+        // Menu de tipo na tela de busca
+        document.querySelectorAll('#search-screen .menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const searchType = item.getAttribute('data-search-type');
+                document.querySelectorAll('#search-screen .menu-item').forEach(m => m.classList.remove('active'));
+                item.classList.add('active');
+                this.currentSearchType = searchType;
+                // Re-executar busca se houver query
+                const query = searchInput?.value.trim();
+                if (query && query.length >= 2) {
+                    this.performSearch(query);
+                }
+            });
+        });
 
         // Botão retry
         document.getElementById('retry-btn')?.addEventListener('click', () => {
