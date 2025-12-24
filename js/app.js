@@ -367,6 +367,9 @@ class IPTVApp {
      */
     async playChannel(channel) {
         try {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:playChannel:entry',message:'Iniciando playChannel',data:{channelId:channel.stream_id||channel.id,channelName:channel.name||channel.title,categoryType:this.currentCategory?.type},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             let streamUrl = '';
 
             if (this.config.IPTV_TYPE === 'xtream') {
@@ -375,6 +378,9 @@ class IPTVApp {
                     channel.stream_id || channel.id,
                     streamType
                 );
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:playChannel:urlGenerated',message:'URL do stream gerada',data:{streamUrl:streamUrl,streamType:streamType},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                // #endregion
             } else {
                 // M3U - URL já está no objeto
                 streamUrl = channel.url;
@@ -390,6 +396,9 @@ class IPTVApp {
             await this.player.play(streamUrl, title);
             
         } catch (error) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:playChannel:catch',message:'Erro em playChannel',data:{errorName:error.name,errorMessage:error.message,channelId:channel.stream_id||channel.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
             console.error('Erro ao reproduzir:', error);
             this.showError(`Erro ao reproduzir: ${error.message}`);
         }
