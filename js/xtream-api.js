@@ -5,7 +5,12 @@
 
 class XtreamAPI {
     constructor(url, username, password) {
-        this.baseUrl = url.replace(/\/$/, ''); // Remove trailing slash
+        // Converter HTTP para HTTPS se a página estiver em HTTPS (evitar mixed content)
+        let processedUrl = url.replace(/\/$/, ''); // Remove trailing slash
+        if (window.location.protocol === 'https:' && processedUrl.startsWith('http://')) {
+            processedUrl = processedUrl.replace('http://', 'https://');
+        }
+        this.baseUrl = processedUrl;
         this.username = username;
         this.password = password;
         this.serverInfo = null;
@@ -18,9 +23,12 @@ class XtreamAPI {
         try {
             const url = `${this.baseUrl}/player_api.php?username=${this.username}&password=${this.password}`;
             // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:beforeFetch',message:'Antes de fazer fetch',data:{url:url,baseUrl:this.baseUrl,protocol:url.startsWith('https')?'https':url.startsWith('http')?'http':'unknown',currentPageProtocol:window.location.protocol},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:beforeFetch',message:'Antes de fazer fetch',data:{url:url,baseUrl:this.baseUrl,protocol:url.startsWith('https')?'https':url.startsWith('http')?'http':'unknown',currentPageProtocol:window.location.protocol,urlAfterFix:url},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
             // #endregion
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             // #region agent log
             fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:afterFetch',message:'Após fetch',data:{status:response.status,statusText:response.statusText,ok:response.ok,headers:Object.fromEntries(response.headers.entries())},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
             // #endregion
@@ -52,7 +60,10 @@ class XtreamAPI {
     async getLiveCategories() {
         try {
             const url = `${this.baseUrl}/player_api.php?username=${this.username}&password=${this.password}&action=get_live_categories`;
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             
             if (!response.ok) {
                 throw new Error(`Erro ao buscar categorias: ${response.status}`);
@@ -75,7 +86,10 @@ class XtreamAPI {
                 url += `&category_id=${categoryId}`;
             }
             
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             
             if (!response.ok) {
                 throw new Error(`Erro ao buscar canais: ${response.status}`);
@@ -94,7 +108,10 @@ class XtreamAPI {
     async getVodCategories() {
         try {
             const url = `${this.baseUrl}/player_api.php?username=${this.username}&password=${this.password}&action=get_vod_categories`;
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             
             if (!response.ok) {
                 throw new Error(`Erro ao buscar categorias VOD: ${response.status}`);
@@ -117,7 +134,10 @@ class XtreamAPI {
                 url += `&category_id=${categoryId}`;
             }
             
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             
             if (!response.ok) {
                 throw new Error(`Erro ao buscar VOD: ${response.status}`);

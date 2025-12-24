@@ -14,7 +14,16 @@ class M3UParser {
      */
     async loadFromUrl(url) {
         try {
-            const response = await fetch(url);
+            // Converter HTTP para HTTPS se a página estiver em HTTPS (evitar mixed content)
+            let processedUrl = url;
+            if (window.location.protocol === 'https:' && processedUrl.startsWith('http://')) {
+                processedUrl = processedUrl.replace('http://', 'https://');
+            }
+            
+            const response = await fetch(processedUrl, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
             if (!response.ok) {
                 throw new Error(`Erro ao carregar playlist: ${response.status}`);
             }
