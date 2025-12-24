@@ -154,10 +154,22 @@ class XtreamAPI {
      * Obtém URL do stream para reprodução
      */
     getStreamUrl(streamId, streamType = 'live') {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:getStreamUrl',message:'Gerando URL do stream',data:{streamId:streamId,streamType:streamType,baseUrl:this.baseUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+        // #endregion
         if (streamType === 'live') {
-            return `${this.baseUrl}/live/${this.username}/${this.password}/${streamId}.m3u8`;
+            const url = `${this.baseUrl}/live/${this.username}/${this.password}/${streamId}.m3u8`;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:getStreamUrl:live',message:'URL live gerada',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
+            return url;
         } else {
-            return `${this.baseUrl}/movie/${this.username}/${this.password}/${streamId}.mkv`;
+            // Para VOD, pode ser .mkv ou .m3u8 dependendo do servidor
+            const url = `${this.baseUrl}/movie/${this.username}/${this.password}/${streamId}.mkv`;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:getStreamUrl:vod',message:'URL VOD gerada',data:{url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+            // #endregion
+            return url;
         }
     }
 

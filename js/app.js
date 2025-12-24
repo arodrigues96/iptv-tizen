@@ -434,12 +434,20 @@ class IPTVApp {
             }
 
             // Se buscar por "series", filtrar resultados que parecem séries
+            // Mas se a busca já contém palavras-chave de série, não filtrar demais
             if (this.currentSearchType === 'series') {
-                const seriesKeywords = ['season', 'episode', 'ep', 'série', 'serie', 'series'];
-                results = results.filter(item => {
-                    const name = (item.name || item.title || '').toLowerCase();
-                    return seriesKeywords.some(keyword => name.includes(keyword));
-                });
+                const queryLower = query.toLowerCase();
+                const hasSeriesKeywords = ['season', 'episode', 'ep', 'série', 'serie', 'series', 'stranger', 'things'].some(kw => queryLower.includes(kw));
+                
+                if (!hasSeriesKeywords) {
+                    // Se não tem palavras-chave na busca, filtrar por padrões de série
+                    const seriesKeywords = ['season', 'episode', 'ep', 'série', 'serie', 'series', 's01', 's02', 's1e', 's2e'];
+                    results = results.filter(item => {
+                        const name = (item.name || item.title || '').toLowerCase();
+                        return seriesKeywords.some(keyword => name.includes(keyword));
+                    });
+                }
+                // Se tem palavras-chave, manter todos os resultados VOD (podem ser séries)
             }
 
             this.renderSearchResults(results);

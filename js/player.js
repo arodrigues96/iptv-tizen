@@ -111,14 +111,26 @@ class VideoPlayer {
 
             this.hls.on(Hls.Events.ERROR, (event, data) => {
                 // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:hlsError',message:'Erro HLS',data:{fatal:data.fatal,type:data.type,details:data.details,url:url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:hlsError',message:'Erro HLS',data:{fatal:data.fatal,type:data.type,details:data.details,url:url,response:data.response,responseCode:data.response?.code,responseText:data.response?.text},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
                 // #endregion
                 console.error('Erro HLS:', data);
                 if (data.fatal) {
                     switch(data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
-                            console.log('Tentando recuperar...');
-                            this.hls.startLoad();
+                            // #region agent log
+                            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'player.js:playHLS:networkError',message:'Tentando recuperar network error',data:{url:url,details:data.details},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'stream-error'})}).catch(()=>{});
+                            // #endregion
+                            // Tentar algumas vezes antes de desistir
+                            if (data.details === 'manifestLoadError' || data.details === 'manifestParsingError') {
+                                // Pode ser CORS ou URL incorreta - tentar com .ts diretamente ou verificar URL
+                                console.log('Erro ao carregar manifest. Verificando URL...');
+                                // Tentar uma vez mais
+                                setTimeout(() => {
+                                    this.hls.startLoad();
+                                }, 2000);
+                            } else {
+                                this.hls.startLoad();
+                            }
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
                             console.log('Tentando recuperar erro de mídia...');
