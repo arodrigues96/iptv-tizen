@@ -53,6 +53,9 @@ class IPTVApp {
      */
     async loadConfig() {
         try {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:entry',message:'Iniciando carregamento de config.js',data:{scriptSrc:'config.js',currentUrl:window.location.href},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             // Tentar carregar config.js
             const script = document.createElement('script');
             script.src = 'config.js';
@@ -60,6 +63,9 @@ class IPTVApp {
             
             await new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:timeout',message:'Timeout ao carregar config.js',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
                     reject(new Error('Timeout ao carregar config.js. Verifique se o arquivo existe e está configurado corretamente.'));
                 }, 5000);
                 
@@ -67,21 +73,36 @@ class IPTVApp {
                     clearTimeout(timeout);
                     // Pequeno delay para garantir que a variável foi definida
                     setTimeout(() => {
+                        // #region agent log
+                        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:onload',message:'Script config.js carregado',data:{hasIPTV_CONFIG:typeof IPTV_CONFIG !== 'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                        // #endregion
                         if (typeof IPTV_CONFIG !== 'undefined') {
                             this.config = IPTV_CONFIG;
+                            // #region agent log
+                            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:success',message:'Config carregado com sucesso',data:{iptvType:IPTV_CONFIG.IPTV_TYPE,hasUrl:!!IPTV_CONFIG.IPTV_URL,urlLength:IPTV_CONFIG.IPTV_URL?.length,hasUsername:!!IPTV_CONFIG.IPTV_USERNAME,hasPassword:!!IPTV_CONFIG.IPTV_PASSWORD},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                            // #endregion
                             resolve();
                         } else {
+                            // #region agent log
+                            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:missing',message:'IPTV_CONFIG não encontrado',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                            // #endregion
                             reject(new Error('IPTV_CONFIG não encontrado em config.js. Verifique se o arquivo está configurado corretamente.'));
                         }
                     }, 100);
                 };
                 script.onerror = () => {
                     clearTimeout(timeout);
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:error',message:'Erro ao carregar script config.js',data:{scriptSrc:script.src},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
                     reject(new Error('Erro ao carregar config.js. Verifique se o arquivo existe.'));
                 };
                 document.head.appendChild(script);
             });
         } catch (error) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadConfig:catch',message:'Exceção ao carregar config',data:{error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             throw new Error(`Erro ao carregar configuração: ${error.message}`);
         }
     }
@@ -108,7 +129,13 @@ class IPTVApp {
      * Carrega dados via Xtream Codes API
      */
     async loadXtreamData() {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadXtreamData:entry',message:'Iniciando loadXtreamData',data:{hasUrl:!!this.config.IPTV_URL,url:this.config.IPTV_URL,hasUsername:!!this.config.IPTV_USERNAME,hasPassword:!!this.config.IPTV_PASSWORD},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
         if (!this.config.IPTV_URL || !this.config.IPTV_USERNAME || !this.config.IPTV_PASSWORD) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadXtreamData:incomplete',message:'Configuração incompleta',data:{hasUrl:!!this.config.IPTV_URL,hasUsername:!!this.config.IPTV_USERNAME,hasPassword:!!this.config.IPTV_PASSWORD},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
             throw new Error('Configuração Xtream incompleta. Verifique IPTV_URL, IPTV_USERNAME e IPTV_PASSWORD');
         }
 
@@ -119,6 +146,9 @@ class IPTVApp {
         );
 
         // Autenticar
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app.js:loadXtreamData:beforeAuth',message:'Antes de chamar authenticate',data:{baseUrl:this.api.baseUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+        // #endregion
         await this.api.authenticate();
 
         // Carregar categorias

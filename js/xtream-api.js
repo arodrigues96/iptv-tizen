@@ -17,15 +17,30 @@ class XtreamAPI {
     async authenticate() {
         try {
             const url = `${this.baseUrl}/player_api.php?username=${this.username}&password=${this.password}`;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:beforeFetch',message:'Antes de fazer fetch',data:{url:url,baseUrl:this.baseUrl,protocol:url.startsWith('https')?'https':url.startsWith('http')?'http':'unknown',currentPageProtocol:window.location.protocol},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            // #endregion
             const response = await fetch(url);
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:afterFetch',message:'Após fetch',data:{status:response.status,statusText:response.statusText,ok:response.ok,headers:Object.fromEntries(response.headers.entries())},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            // #endregion
             
             if (!response.ok) {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:notOk',message:'Response não OK',data:{status:response.status,statusText:response.statusText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                // #endregion
                 throw new Error(`Erro de autenticação: ${response.status}`);
             }
             
             this.serverInfo = await response.json();
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:success',message:'Autenticação bem-sucedida',data:{hasServerInfo:!!this.serverInfo},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            // #endregion
             return this.serverInfo;
         } catch (error) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/e2db86f0-3e51-4fba-8d95-27a01cf275ef',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'xtream-api.js:authenticate:catch',message:'Erro na autenticação',data:{errorName:error.name,errorMessage:error.message,errorStack:error.stack,isNetworkError:error.message.includes('fetch')||error.message.includes('network')||error.message.includes('Failed to fetch'),isCorsError:error.message.includes('CORS')||error.message.includes('cors')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            // #endregion
             console.error('Erro na autenticação:', error);
             throw error;
         }
