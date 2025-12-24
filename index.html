@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IPTV Player para Samsung Tizen">
+    <title>IPTV Player</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="screen active">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Main Menu: Categories -->
+    <div id="categories-screen" class="screen">
+        <div class="header">
+            <h1>IPTV Player</h1>
+            <div class="header-actions">
+                <button id="search-btn" class="btn-icon" aria-label="Buscar">🔍</button>
+            </div>
+        </div>
+        <div class="container">
+            <h2 class="section-title">Categorias</h2>
+            <div id="categories-grid" class="grid" role="list"></div>
+        </div>
+    </div>
+
+    <!-- Channels List -->
+    <div id="channels-screen" class="screen">
+        <div class="header">
+            <button id="back-btn" class="btn-back" aria-label="Voltar">←</button>
+            <h1 id="category-title">Canais</h1>
+        </div>
+        <div class="container">
+            <div id="channels-list" class="list" role="list"></div>
+        </div>
+    </div>
+
+    <!-- Search Screen -->
+    <div id="search-screen" class="screen">
+        <div class="header">
+            <button id="search-back-btn" class="btn-back" aria-label="Voltar">←</button>
+            <h1>Buscar</h1>
+        </div>
+        <div class="container">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Digite para buscar..." autocomplete="off">
+            </div>
+            <div id="search-results" class="list" role="list"></div>
+        </div>
+    </div>
+
+    <!-- Video Player -->
+    <div id="player-screen" class="screen">
+        <div class="player-container">
+            <video id="video-player" controls></video>
+            <div class="player-overlay">
+                <button id="player-back-btn" class="btn-back" aria-label="Voltar">←</button>
+                <div class="player-info">
+                    <h2 id="player-title"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Screen -->
+    <div id="error-screen" class="screen">
+        <div class="error-content">
+            <h2>Erro</h2>
+            <p id="error-message"></p>
+            <button id="retry-btn" class="btn-primary">Tentar Novamente</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/xtream-api.js"></script>
+    <script src="js/m3u-parser.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

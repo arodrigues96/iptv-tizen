@@ -1,0 +1,14 @@
+# Arquivo de configuração com credenciais
+config.js
+
+# Logs
+*.log
+
+# Cache
+.cache/
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+

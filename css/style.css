@@ -1,0 +1,341 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #0078d4;
+    --primary-hover: #005a9e;
+    --bg-color: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-color: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #404040;
+    --selected-color: #0078d4;
+    --selected-bg: rgba(0, 120, 212, 0.2);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    min-height: 80px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* Buttons */
+.btn-back, .btn-icon, .btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    min-height: 48px;
+    min-width: 48px;
+}
+
+.btn-back:hover, .btn-icon:hover, .btn-primary:hover,
+.btn-back:focus, .btn-icon:focus, .btn-primary:focus {
+    background-color: var(--primary-hover);
+    outline: 2px solid var(--selected-color);
+    outline-offset: 2px;
+}
+
+.btn-icon {
+    padding: 12px;
+    font-size: 24px;
+}
+
+/* Container */
+.container {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.section-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+}
+
+/* Grid - Categories */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 10px 0;
+}
+
+.grid-item {
+    background-color: var(--bg-secondary);
+    border: 3px solid transparent;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.grid-item:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.grid-item.selected {
+    border-color: var(--selected-color);
+    background-color: var(--selected-bg);
+    transform: scale(1.08);
+}
+
+/* List - Channels */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.list-item {
+    background-color: var(--bg-secondary);
+    border: 3px solid transparent;
+    border-radius: 8px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 80px;
+}
+
+.list-item:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 120, 212, 0.1);
+}
+
+.list-item.selected {
+    border-color: var(--selected-color);
+    background-color: var(--selected-bg);
+}
+
+.channel-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    flex-shrink: 0;
+}
+
+.channel-info {
+    flex: 1;
+}
+
+.channel-name {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.channel-group {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+/* Search */
+.search-box {
+    margin-bottom: 30px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 20px 25px;
+    font-size: 24px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    outline: none;
+}
+
+#search-input:focus {
+    border-color: var(--primary-color);
+}
+
+/* Player */
+#player-screen {
+    background-color: #000;
+}
+
+.player-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.player-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 40px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    pointer-events: none;
+}
+
+.player-overlay button {
+    pointer-events: all;
+}
+
+.player-info {
+    margin-top: 20px;
+}
+
+.player-info h2 {
+    font-size: 28px;
+    color: var(--text-color);
+}
+
+/* Loading */
+#loading-screen {
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-color);
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-content p {
+    font-size: 24px;
+    color: var(--text-secondary);
+}
+
+/* Error */
+#error-screen {
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-color);
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 40px;
+}
+
+.error-content h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #ff4444;
+}
+
+.error-content p {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-secondary);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid var(--selected-color);
+    outline-offset: 2px;
+}
+
+/* Hide default focus outline */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
